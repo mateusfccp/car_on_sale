@@ -36,7 +36,7 @@ sealed class Command<T> with ChangeNotifier {
   ///
   /// If this command has never been executed or [clearResult] is called, `null`
   /// will be returned.
-  Result? get result => _result;
+  Result<T>? get result => _result;
 
   /// Clear last action result.
   void clearResult() {

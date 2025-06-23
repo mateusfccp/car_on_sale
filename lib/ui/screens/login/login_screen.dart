@@ -1,99 +1,148 @@
-import 'package:cars_on_sale/data/repositories/authentication_repository.dart';
+import 'package:cars_on_sale/core/result.dart';
 import 'package:cars_on_sale/ui/screens/login/login_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+/// A screen that allows the user to log in to the app.
 final class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  /// Creates a [LoginScreen] with the given [viewModel].
+  const LoginScreen({super.key, required this.viewModel});
+
+  /// The view-model for this screen.
+  final LoginViewModel viewModel;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
-
-  static final _emailPattern = RegExp(r'.+@.+');
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  // TODO(mateusfccp): set up DI
-  final viewModel = LoginViewModel(repository: MockAuthenticationRepository());
-
+final class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final _buttonFocusNode = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    widget.viewModel.login.addListener(_handleLoginResult);
+  }
+
+  @override
   void dispose() {
+    widget.viewModel.login.removeListener(_handleLoginResult);
     _buttonFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text('Car On Sale Coding Challenge')),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Center(
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUnfocus,
-              child: Column(
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('User'),
-                    ),
-                    textInputAction: TextInputAction.next,
-                    validator: _userValidator,
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('Password'),
-                    ),
-                    obscureText: true,
-                    onFieldSubmitted: (value) => _submitForm(),
-                    textInputAction: TextInputAction.go,
-                    validator: _passwordValidator,
-                  ),
-                  const SizedBox(height: 16.0),
-                  ListenableBuilder(
-                    listenable: viewModel.login,
-                    builder: (context, child) {
-                      return ElevatedButton.icon(
-                        icon: viewModel.login.running
-                            ? null
-                            : CircularProgressIndicator(),
-                        label: child!,
-                        onPressed: viewModel.login.running ? null : _submitForm,
-                      );
-                    },
-                    child: const Text('Login'),
-                  ),
-                ],
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Hero(
+                tag: 'logo',
+                child: Image.asset('assets/logo.png', scale: 2.0),
               ),
-            ),
+              const SizedBox(height: 32.0),
+              TextFormField(
+                controller: widget.viewModel.userTextController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text('User'),
+                ),
+                textInputAction: TextInputAction.next,
+                validator: _userValidator,
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: widget.viewModel.passwordTextController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text('Password'),
+                ),
+                obscureText: true,
+                onFieldSubmitted: (value) {
+                  _tapButton();
+                },
+                textInputAction: TextInputAction.go,
+                validator: _passwordValidator,
+              ),
+              const SizedBox(height: 16.0),
+              ListenableBuilder(
+                listenable: widget.viewModel.login,
+                builder: (context, child) {
+                  return ElevatedButton.icon(
+                    focusNode: _buttonFocusNode,
+                    icon: widget.viewModel.login.running
+                        ? CircularProgressIndicator(
+                            constraints: BoxConstraints.tightFor(
+                              width: 16.0,
+                              height: 16.0,
+                            ),
+                            strokeCap: StrokeCap.round,
+                            strokeWidth: 2.0,
+                          )
+                        : null,
+                    label: child!,
+                    onPressed: widget.viewModel.login.running
+                        ? null
+                        : _submitForm,
+                  );
+                },
+                child: const Text('Login'),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  void _submitForm() {
-    if (_formKey.currentState case final state?) {
-      final result = state.validateGranularly();
+  // We progamatically tap the button so that the animation is executed and so
+  // that the form is not submitted if the button callback is set to null.
+  void _tapButton() {
+    _buttonFocusNode.requestFocus();
 
-      if (result.isEmpty) {
-        viewModel.login();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_buttonFocusNode.context case final context? when context.mounted) {
+        Actions.invoke(context, const ActivateIntent());
       }
+    });
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState?.validate() ?? false) {
+      widget.viewModel.login();
     }
   }
+
+  void _handleLoginResult() {
+    switch (widget.viewModel.login.result) {
+      case Ok():
+        context.go('/home');
+      case Error result:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme.of(context).colorScheme.error,
+            content: Text('${result.error}'),
+            showCloseIcon: true,
+          ),
+        );
+      case null:
+    }
+  }
+
+  // This is enough to have a reasonable e-mail validation, as validating
+  // e-mails strictly is almost always unnecessary and costful.
+  static final _emailPattern = RegExp(r'.+@.+');
 
   String? _userValidator(String? value) {
     if (value == null || value.isEmpty) {
       return 'This field is required.';
-    } else if (!LoginScreen._emailPattern.hasMatch(value)) {
+    } else if (!_emailPattern.hasMatch(value)) {
       return 'Invalid user. An e-mail is expected.';
     } else {
       return null;
