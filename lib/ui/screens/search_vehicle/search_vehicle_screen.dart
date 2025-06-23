@@ -1,5 +1,14 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:cars_on_sale/core/result.dart';
+import 'package:cars_on_sale/data/models/api_error.dart';
+import 'package:cars_on_sale/data/models/partial_vehicle_data.dart';
+import 'package:cars_on_sale/data/models/vehicle_valuation_data.dart';
+import 'package:cars_on_sale/ui/widgets/countdown_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart';
 
 import 'search_vehicle_view_model.dart';
 
@@ -15,14 +24,9 @@ final class SearchVehicleScreen extends StatefulWidget {
   State<SearchVehicleScreen> createState() => _SearchVehicleScreenState();
 }
 
-class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
+final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
   final _formKey = GlobalKey<FormState>();
   final _buttonFocusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -46,14 +50,7 @@ class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
-              onPressed: () async {
-                // TODO(mateusfccp): check if we can do better in relation to this await
-                await widget.viewModel.logout();
-
-                if (context.mounted) {
-                  context.go('/login');
-                }
-              },
+              onPressed: _logout,
               icon: Icon(Icons.logout),
             ),
           ),
@@ -77,11 +74,11 @@ class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
               ),
               const SizedBox(height: 16.0),
               ListenableBuilder(
-                listenable: widget.viewModel.searchVin,
+                listenable: widget.viewModel.searchValuationByVIN,
                 builder: (context, child) {
                   return ElevatedButton.icon(
                     focusNode: _buttonFocusNode,
-                    icon: widget.viewModel.searchVin.running
+                    icon: widget.viewModel.searchValuationByVIN.running
                         ? CircularProgressIndicator(
                             constraints: BoxConstraints.tightFor(
                               width: 16.0,
@@ -92,7 +89,7 @@ class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
                           )
                         : null,
                     label: child!,
-                    onPressed: widget.viewModel.searchVin.running
+                    onPressed: widget.viewModel.searchValuationByVIN.running
                         ? null
                         : _submitForm,
                   );
@@ -104,6 +101,15 @@ class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _logout() async {
+    // TODO(mateusfccp): check if we can do better in relation to this await
+    await widget.viewModel.logout();
+
+    if (mounted) {
+      context.go('/login');
+    }
   }
 
   // We progamatically tap the button so that the animation is executed and so
@@ -118,9 +124,79 @@ class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
     });
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      widget.viewModel.searchVin();
+      await widget.viewModel.searchValuationByVIN();
+
+      if (mounted) {
+        switch (widget.viewModel.searchValuationByVIN.result) {
+          case Ok(:VehicleValuationData value):
+            print("Got vehicle");
+          case Ok(:List<PartialVehicleData> value):
+            print("Got list of partial");
+          case Error(error: TimeoutException()):
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text(
+                  'Request timed out. Try again later, or, if the problem '
+                  'persists, contact technical support.',
+                ),
+                showCloseIcon: true,
+              ),
+            );
+          case Error(error: ClientException(message: 'Auth')):
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: CountdownBuilder(
+                  count: 3,
+                  onCountdownOver: _logout,
+                  builder: (context, count, child) {
+                    return Text(
+                      'Permission error. You are going to be logged out in a '
+                      'few seconds.',
+                    );
+                  }
+                ),
+                duration: const Duration(seconds: 4),
+              ),
+            );
+          case Error(error: ApiError(messageKey: 'maintenance') && var error):
+            final delaySeconds = error.parameters.delaySeconds;
+            final seconds = int.parse(delaySeconds);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: CountdownBuilder(
+                  count: seconds,
+                  builder: (context, count, child) {
+                    return Text(
+                      count > 0
+                          ? 'System in maintenance. Please, try again in '
+                                '$count seconds.'
+                          : 'System in maintenance. Please, try again.',
+                    );
+                  },
+                ),
+                duration: Duration(seconds: max(seconds, 5)),
+                showCloseIcon: true,
+              ),
+            );
+          case Error error:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text('Unknown error: ${error.error}'),
+                showCloseIcon: true,
+              ),
+            );
+          default:
+        }
+      }
+
+      widget.viewModel.searchValuationByVIN.clearResult();
     }
   }
 

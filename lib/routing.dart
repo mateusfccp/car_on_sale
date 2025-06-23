@@ -1,3 +1,4 @@
+import 'package:cars_on_sale/data/repositories/auction_repository.dart';
 import 'package:cars_on_sale/data/repositories/authentication_repository.dart';
 import 'package:cars_on_sale/ui/screens/search_vehicle/search_vehicle_screen.dart';
 import 'package:cars_on_sale/ui/screens/search_vehicle/search_vehicle_view_model.dart';
@@ -27,6 +28,9 @@ RouterConfig<Object> createRouterConfig({
         builder: (context, state) {
           return SearchVehicleScreen(
             viewModel: SearchVehicleViewModel(
+              auctionRepository: MockAuctionRepository(
+                authenticationService: authenticationService,
+              ),
               authenticationRepository: MockAuthenticationRepository(),
               authenticationService: authenticationService,
             ),

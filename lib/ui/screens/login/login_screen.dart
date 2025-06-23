@@ -20,14 +20,7 @@ final class _LoginScreenState extends State<LoginScreen> {
   final _buttonFocusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    widget.viewModel.login.addListener(_handleLoginResult);
-  }
-
-  @override
   void dispose() {
-    widget.viewModel.login.removeListener(_handleLoginResult);
     _buttonFocusNode.dispose();
     super.dispose();
   }
@@ -113,25 +106,27 @@ final class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      widget.viewModel.login();
-    }
-  }
+      await widget.viewModel.login();
 
-  void _handleLoginResult() {
-    switch (widget.viewModel.login.result) {
-      case Ok():
-        context.go('/home');
-      case Error result:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Theme.of(context).colorScheme.error,
-            content: Text('${result.error}'),
-            showCloseIcon: true,
-          ),
-        );
-      case null:
+      if (mounted) {
+        switch (widget.viewModel.login.result) {
+          case Ok():
+            context.go('/home');
+          case Error result:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text('${result.error}'),
+                showCloseIcon: true,
+              ),
+            );
+          case null:
+        }
+      }
+
+      widget.viewModel.login.clearResult();
     }
   }
 

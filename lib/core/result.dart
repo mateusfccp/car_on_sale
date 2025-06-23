@@ -6,7 +6,7 @@ sealed class Result<T> {
   const factory Result.ok(T value) = Ok._;
 
   /// Creates an error [Result], completed with the specified [error].
-  const factory Result.error(Exception error) = Error._;
+  const factory Result.error(Object error) = Error._;
 }
 
 /// An operation that successfully completed with a value.
@@ -25,7 +25,7 @@ final class Error<T> extends Result<T> {
   const Error._(this.error);
 
   /// The error returned by the operation.
-  final Exception error;
+  final Object error;
 
   @override
   String toString() => 'Result<$T>.error($error)';
