@@ -118,7 +118,7 @@ final class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         switch (widget.viewModel.login.result) {
           case Ok():
-            context.go('/home');
+            context.go('/search');
           case Error result:
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
