@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 /// automatically removed.
 final class VINInputFormatter extends TextInputFormatter {
   static final _invalidVinCharacters = RegExp('[^A-HJ-NPR-Z0-9]');
-  
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,

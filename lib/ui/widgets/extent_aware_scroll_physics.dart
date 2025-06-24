@@ -12,9 +12,7 @@ import 'package:flutter/widgets.dart';
 /// When the content overflows the viewport, this class delegates to the parent
 /// [ScrollPhysics], allowing for normal scrolling behavior.
 final class ExtentAwareScrollPhysics extends ScrollPhysics {
-  const ExtentAwareScrollPhysics({
-    required this.physicsWhenContentFits,
-  });
+  const ExtentAwareScrollPhysics({required this.physicsWhenContentFits});
 
   /// The physics that will be used when the content fits the viewport.
   final ScrollPhysics physicsWhenContentFits;
@@ -38,20 +36,34 @@ final class ExtentAwareScrollPhysics extends ScrollPhysics {
   }
 
   @override
-  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) {
     if (position.minScrollExtent <= position.maxScrollExtent) {
       return super.createBallisticSimulation(position, velocity);
     } else {
-      return physicsWhenContentFits.createBallisticSimulation(position, velocity);
+      return physicsWhenContentFits.createBallisticSimulation(
+        position,
+        velocity,
+      );
     }
   }
 
   @override
-  bool recommendDeferredLoading(double velocity, ScrollMetrics metrics, BuildContext context) {
+  bool recommendDeferredLoading(
+    double velocity,
+    ScrollMetrics metrics,
+    BuildContext context,
+  ) {
     if (metrics.minScrollExtent <= metrics.maxScrollExtent) {
       return super.recommendDeferredLoading(velocity, metrics, context);
     } else {
-      return physicsWhenContentFits.recommendDeferredLoading(velocity, metrics, context);
+      return physicsWhenContentFits.recommendDeferredLoading(
+        velocity,
+        metrics,
+        context,
+      );
     }
   }
 
