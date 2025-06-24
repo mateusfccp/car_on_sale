@@ -1,10 +1,10 @@
-import 'package:cars_on_sale/data/models/partial_vehicle_data.dart';
-import 'package:cars_on_sale/data/models/vehicle_valuation_data.dart';
-import 'package:cars_on_sale/data/repositories/auction_repository.dart';
-import 'package:cars_on_sale/data/repositories/authentication_repository.dart';
-import 'package:cars_on_sale/ui/screens/multiple_results_screen.dart';
-import 'package:cars_on_sale/ui/screens/search_vehicle/search_vehicle_screen.dart';
-import 'package:cars_on_sale/ui/screens/search_vehicle/search_vehicle_view_model.dart';
+import 'package:car_on_sale/data/models/partial_vehicle_data.dart';
+import 'package:car_on_sale/data/models/vehicle_valuation_data.dart';
+import 'package:car_on_sale/data/repositories/auction_repository.dart';
+import 'package:car_on_sale/data/repositories/authentication_repository.dart';
+import 'package:car_on_sale/ui/screens/multiple_results_screen.dart';
+import 'package:car_on_sale/ui/screens/search_vehicle/search_vehicle_screen.dart';
+import 'package:car_on_sale/ui/screens/search_vehicle/search_vehicle_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';

@@ -1,4 +1,4 @@
-import 'package:cars_on_sale/data/models/vehicle_valuation_data.dart';
+import 'package:car_on_sale/data/models/vehicle_valuation_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

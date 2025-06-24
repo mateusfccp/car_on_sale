@@ -1,5 +1,5 @@
-import 'package:cars_on_sale/core/result.dart';
-import 'package:cars_on_sale/data/services/mock_jwt_service.dart';
+import 'package:car_on_sale/core/result.dart';
+import 'package:car_on_sale/data/services/mock_jwt_service.dart';
 
 /// A repository to deal with authentication.
 abstract interface class AuthenticationRepository {

@@ -1,4 +1,4 @@
-import 'package:cars_on_sale/data/services/mock_jwt_service.dart';
+import 'package:car_on_sale/data/services/mock_jwt_service.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';

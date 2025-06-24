@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:cars_on_sale/challenge.dart';
-import 'package:cars_on_sale/core/result.dart';
-import 'package:cars_on_sale/data/models/api_error.dart';
-import 'package:cars_on_sale/data/models/partial_vehicle_data.dart';
-import 'package:cars_on_sale/data/models/vehicle_valuation_data.dart';
-import 'package:cars_on_sale/ui/widgets/countdown_builder.dart';
-import 'package:cars_on_sale/ui/widgets/vin_input_formatter.dart';
+import 'package:car_on_sale/challenge.dart';
+import 'package:car_on_sale/core/result.dart';
+import 'package:car_on_sale/data/models/api_error.dart';
+import 'package:car_on_sale/data/models/partial_vehicle_data.dart';
+import 'package:car_on_sale/data/models/vehicle_valuation_data.dart';
+import 'package:car_on_sale/ui/widgets/countdown_builder.dart';
+import 'package:car_on_sale/ui/widgets/vin_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';

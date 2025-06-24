@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cars_on_sale/routing.dart';
+import 'package:car_on_sale/routing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';

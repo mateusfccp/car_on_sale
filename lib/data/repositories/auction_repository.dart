@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cars_on_sale/challenge.dart';
-import 'package:cars_on_sale/core/authentication_service.dart';
-import 'package:cars_on_sale/core/result.dart';
-import 'package:cars_on_sale/data/models/api_error.dart';
-import 'package:cars_on_sale/data/models/partial_vehicle_data.dart';
-import 'package:cars_on_sale/data/models/vehicle_valuation_data.dart';
+import 'package:car_on_sale/challenge.dart';
+import 'package:car_on_sale/core/authentication_service.dart';
+import 'package:car_on_sale/core/result.dart';
+import 'package:car_on_sale/data/models/api_error.dart';
+import 'package:car_on_sale/data/models/partial_vehicle_data.dart';
+import 'package:car_on_sale/data/models/vehicle_valuation_data.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

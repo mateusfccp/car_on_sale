@@ -1,5 +1,5 @@
-import 'package:cars_on_sale/core/result.dart';
-import 'package:cars_on_sale/ui/screens/login/login_view_model.dart';
+import 'package:car_on_sale/core/result.dart';
+import 'package:car_on_sale/ui/screens/login/login_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
