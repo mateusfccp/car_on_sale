@@ -23,7 +23,7 @@ final class ValuationDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Valuation Details')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Card(
           child: Padding(
