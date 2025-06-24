@@ -33,9 +33,10 @@ deserialization, network, or server issues) to the user.
 ### Step 3 *(Optional)*: Intermediate State Processing
 
 If you receive a status code 300 in the second step, show the user the options
-for selecting the correct vehicle.  > Bonus task: Consider the "similarity"
-parameter (ranging from 0 to 99) you received. The higher the value, the better
-the match.
+for selecting the correct vehicle.
+
+> Bonus task: Consider the "similarity" parameter (ranging from 0 to 99) you
+> received. The higher the value, the better the match.
 
 ### Step 4: Data Caching
 
