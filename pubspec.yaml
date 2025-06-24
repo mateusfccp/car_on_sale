@@ -1,5 +1,5 @@
-name: cars_on_sale
-description: "An app for the Cars on Sale coding challenge."
+name: car_on_sale
+description: "An app for the Car on Sale coding challenge."
 publish_to: 'none'
 version: 0.1.0
 
