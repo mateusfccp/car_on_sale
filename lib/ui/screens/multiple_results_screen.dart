@@ -13,6 +13,9 @@ final class MultipleResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sortedResults = [...results]
+      ..sort((a, b) => b.similarity.compareTo(a.similarity));
+
     return Scaffold(
       appBar: AppBar(title: const Text('Results')),
       body: CustomScrollView(
@@ -31,9 +34,12 @@ final class MultipleResultsScreen extends StatelessWidget {
             ),
           ),
           SliverList.separated(
-            itemCount: results.length,
+            itemCount: sortedResults.length,
             itemBuilder: (context, index) {
-              return _PartialDataTile(data: results[index]);
+              return _PartialDataTile(
+                data: sortedResults[index],
+                highlight: index == 0,
+              );
             },
             separatorBuilder: (context, index) {
               return const Divider(height: 0.0);
@@ -46,21 +52,48 @@ final class MultipleResultsScreen extends StatelessWidget {
 }
 
 final class _PartialDataTile extends StatelessWidget {
-  const _PartialDataTile({required this.data});
+  const _PartialDataTile({required this.data, required this.highlight});
 
   final PartialVehicleData data;
+  final bool highlight;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('${data.make} ${data.model}'),
+      title: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: '${data.make} ${data.model}'),
+            if (highlight) ...[
+              TextSpan(text: ' '),
+              WidgetSpan(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4.0),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Text(
+                      'Best Match',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
       subtitle: Text(data.containerName),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('Similarity'),
           Text(
-            data.similarity.toString(),
+            '${data.similarity}%',
             style: Theme.of(context).textTheme.labelLarge,
           ),
         ],
