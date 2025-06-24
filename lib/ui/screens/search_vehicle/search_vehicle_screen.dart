@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cars_on_sale/challenge.dart';
 import 'package:cars_on_sale/core/result.dart';
 import 'package:cars_on_sale/data/models/api_error.dart';
 import 'package:cars_on_sale/data/models/partial_vehicle_data.dart';
 import 'package:cars_on_sale/data/models/vehicle_valuation_data.dart';
+import 'package:cars_on_sale/ui/vin_input_formatter.dart';
 import 'package:cars_on_sale/ui/widgets/countdown_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 
@@ -49,10 +52,7 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              onPressed: _logout,
-              icon: Icon(Icons.logout),
-            ),
+            child: IconButton(onPressed: _logout, icon: Icon(Icons.logout)),
           ),
         ],
       ),
@@ -68,6 +68,11 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
                   border: OutlineInputBorder(),
                   label: Text('VIN'),
                 ),
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(CosChallenge.vinLength),
+                  VINInputFormatter(),
+                ],
+                textCapitalization: TextCapitalization.characters,
                 textInputAction: TextInputAction.go,
                 onFieldSubmitted: (value) => _tapButton(),
                 validator: _vinValidator,
@@ -131,9 +136,9 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
       if (mounted) {
         switch (widget.viewModel.searchValuationByVIN.result) {
           case Ok(:VehicleValuationData value):
-            print("Got vehicle");
+            context.push('/valuation', extra: value);
           case Ok(:List<PartialVehicleData> value):
-            print("Got list of partial");
+            context.push('/results', extra: value);
           case Error(error: TimeoutException()):
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -157,7 +162,7 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
                       'Permission error. You are going to be logged out in a '
                       'few seconds.',
                     );
-                  }
+                  },
                 ),
                 duration: const Duration(seconds: 4),
               ),
@@ -204,6 +209,8 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
     // TODO(mateusfccp): check if we can/should check the vin
     if (value == null || value.isEmpty) {
       return 'This field is required.';
+    } else if (value.length < CosChallenge.vinLength) {
+      return 'The VIN should have ${CosChallenge.vinLength} digits.';
     } else {
       return null;
     }

@@ -132,7 +132,7 @@ final class _LoginScreenState extends State<LoginScreen> {
 
   // This is enough to have a reasonable e-mail validation, as validating
   // e-mails strictly is almost always unnecessary and costful.
-  static final _emailPattern = RegExp(r'.+@.+');
+  static final _emailPattern = RegExp('.+@.+');
 
   String? _userValidator(String? value) {
     if (value == null || value.isEmpty) {
