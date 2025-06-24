@@ -56,52 +56,60 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: widget.viewModel.vinTextController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  label: Text('VIN'),
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(CosChallenge.vinLength),
-                  VINInputFormatter(),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 400.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: widget.viewModel.vinTextController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      label: Text('Enter VIN'),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(CosChallenge.vinLength),
+                      VINInputFormatter(),
+                    ],
+                    textCapitalization: TextCapitalization.characters,
+                    textInputAction: TextInputAction.go,
+                    onFieldSubmitted: (value) => _tapButton(),
+                    validator: _vinValidator,
+                  ),
+                  const SizedBox(height: 16.0),
+                  ListenableBuilder(
+                    listenable: widget.viewModel.searchValuationByVIN,
+                    builder: (context, child) {
+                      return ElevatedButton.icon(
+                        focusNode: _buttonFocusNode,
+                        icon: widget.viewModel.searchValuationByVIN.running
+                            ? CircularProgressIndicator(
+                                constraints: BoxConstraints.tightFor(
+                                  width: 16.0,
+                                  height: 16.0,
+                                ),
+                                strokeCap: StrokeCap.round,
+                                strokeWidth: 2.0,
+                              )
+                            : null,
+                        label: child!,
+                        onPressed: widget.viewModel.searchValuationByVIN.running
+                            ? null
+                            : _submitForm,
+                      );
+                    },
+                    child: const Text('Search'),
+                  ),
                 ],
-                textCapitalization: TextCapitalization.characters,
-                textInputAction: TextInputAction.go,
-                onFieldSubmitted: (value) => _tapButton(),
-                validator: _vinValidator,
               ),
-              const SizedBox(height: 16.0),
-              ListenableBuilder(
-                listenable: widget.viewModel.searchValuationByVIN,
-                builder: (context, child) {
-                  return ElevatedButton.icon(
-                    focusNode: _buttonFocusNode,
-                    icon: widget.viewModel.searchValuationByVIN.running
-                        ? CircularProgressIndicator(
-                            constraints: BoxConstraints.tightFor(
-                              width: 16.0,
-                              height: 16.0,
-                            ),
-                            strokeCap: StrokeCap.round,
-                            strokeWidth: 2.0,
-                          )
-                        : null,
-                    label: child!,
-                    onPressed: widget.viewModel.searchValuationByVIN.running
-                        ? null
-                        : _submitForm,
-                  );
-                },
-                child: const Text('Search'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

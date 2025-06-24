@@ -28,66 +28,71 @@ final class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Hero(
-                tag: 'logo',
-                child: Image.asset('assets/logo.png', scale: 2.0),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 400.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: 'logo',
+                    child: Image.asset('assets/logo.png', scale: 2.0),
+                  ),
+                  const SizedBox(height: 32.0),
+                  TextFormField(
+                    controller: widget.viewModel.userTextController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text('User'),
+                    ),
+                    textInputAction: TextInputAction.next,
+                    validator: _userValidator,
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: widget.viewModel.passwordTextController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text('Password'),
+                    ),
+                    obscureText: true,
+                    onFieldSubmitted: (value) {
+                      _tapButton();
+                    },
+                    textInputAction: TextInputAction.go,
+                    validator: _passwordValidator,
+                  ),
+                  const SizedBox(height: 16.0),
+                  ListenableBuilder(
+                    listenable: widget.viewModel.login,
+                    builder: (context, child) {
+                      return ElevatedButton.icon(
+                        focusNode: _buttonFocusNode,
+                        icon: widget.viewModel.login.running
+                            ? CircularProgressIndicator(
+                                constraints: BoxConstraints.tightFor(
+                                  width: 16.0,
+                                  height: 16.0,
+                                ),
+                                strokeCap: StrokeCap.round,
+                                strokeWidth: 2.0,
+                              )
+                            : null,
+                        label: child!,
+                        onPressed: widget.viewModel.login.running
+                            ? null
+                            : _submitForm,
+                      );
+                    },
+                    child: const Text('Login'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 32.0),
-              TextFormField(
-                controller: widget.viewModel.userTextController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  label: Text('User'),
-                ),
-                textInputAction: TextInputAction.next,
-                validator: _userValidator,
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: widget.viewModel.passwordTextController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  label: Text('Password'),
-                ),
-                obscureText: true,
-                onFieldSubmitted: (value) {
-                  _tapButton();
-                },
-                textInputAction: TextInputAction.go,
-                validator: _passwordValidator,
-              ),
-              const SizedBox(height: 16.0),
-              ListenableBuilder(
-                listenable: widget.viewModel.login,
-                builder: (context, child) {
-                  return ElevatedButton.icon(
-                    focusNode: _buttonFocusNode,
-                    icon: widget.viewModel.login.running
-                        ? CircularProgressIndicator(
-                            constraints: BoxConstraints.tightFor(
-                              width: 16.0,
-                              height: 16.0,
-                            ),
-                            strokeCap: StrokeCap.round,
-                            strokeWidth: 2.0,
-                          )
-                        : null,
-                    label: child!,
-                    onPressed: widget.viewModel.login.running
-                        ? null
-                        : _submitForm,
-                  );
-                },
-                child: const Text('Login'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
