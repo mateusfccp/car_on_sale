@@ -9,27 +9,30 @@ import 'package:flutter/widgets.dart';
 
 /// The view-model for the [LoginScreen].
 final class LoginViewModel {
+  /// Creates a [LoginViewModel].
   LoginViewModel({
-    required this.authenticationRepository,
-    required this.authenticationService,
-  });
+    required AuthenticationRepository authenticationRepository,
+    required AuthenticationService authenticationService,
+  }) : _authenticationRepository = authenticationRepository,
+       _authenticationService = authenticationService;
 
-  final AuthenticationRepository authenticationRepository;
-  final AuthenticationService authenticationService;
+  final AuthenticationRepository _authenticationRepository;
+  final AuthenticationService _authenticationService;
+
   final userTextController = TextEditingController();
   final passwordTextController = TextEditingController();
 
-  /// A command to log in.
+  /// A command to log in into the app.
   late final login = Command0(_login);
 
   Future<Result<void>> _login() async {
-    final token = await authenticationRepository.login(
+    final token = await _authenticationRepository.login(
       user: userTextController.text,
       password: passwordTextController.text,
     );
 
     if (token case Ok(:final value)) {
-      authenticationService.setToken(value);
+      _authenticationService.setToken(value);
     }
 
     return token;

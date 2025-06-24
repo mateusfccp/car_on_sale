@@ -71,14 +71,3 @@ final class Command0<T> extends Command<T> {
   /// Executes the action.
   Future<void> call() => _execute(_action);
 }
-
-/// [Command] with one argument.
-final class Command1<T, A> extends Command<T> {
-  /// Creates a command that runs the given [action].
-  Command1(CommandAction1<T, A> action) : _action = action;
-
-  final CommandAction1<T, A> _action;
-
-  /// Executes the action with the given [argument].
-  Future<void> call(A argument) => _execute(() => _action(argument));
-}

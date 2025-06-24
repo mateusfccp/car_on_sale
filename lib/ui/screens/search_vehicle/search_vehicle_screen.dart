@@ -146,7 +146,14 @@ final class _SearchVehicleScreenState extends State<SearchVehicleScreen> {
           case Ok(:VehicleValuationData value):
             context.push('/valuation', extra: value);
           case Ok(:List<PartialVehicleData> value):
-            context.push('/results', extra: value);
+            final selected = await context.push<PartialVehicleData>(
+              '/results',
+              extra: value,
+            );
+
+            if (selected != null) {
+              widget.viewModel.fillVinFieldWithPartialResult(selected);
+            }
           case Error(error: TimeoutException()):
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

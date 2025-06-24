@@ -14,10 +14,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 final class AuthenticationService {
   /// Creates an [AuthenticationService].
   AuthenticationService({
-    required SharedPreferencesAsync storage,
+    required SharedPreferencesAsync sharedPreferences,
     Logger? logger,
   }) : _logger = logger,
-       _storage = storage;
+       _storage = sharedPreferences;
 
   final Logger? _logger;
   final SharedPreferencesAsync _storage;

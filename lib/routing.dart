@@ -7,6 +7,8 @@ import 'package:cars_on_sale/ui/screens/search_vehicle/search_vehicle_screen.dar
 import 'package:cars_on_sale/ui/screens/search_vehicle/search_vehicle_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/authentication_service.dart';
 import 'ui/screens/login/login_screen.dart';
@@ -16,7 +18,24 @@ import 'ui/screens/valuation_details_screen.dart';
 /// Create the router configuration with the given dependencies.
 RouterConfig<Object> createRouterConfig({
   required AuthenticationService authenticationService,
+  required SharedPreferencesAsync sharedPreferences,
+  Logger? logger,
 }) {
+  final authenticationRepository = MockAuthenticationRepository();
+  final auctionRepository = MockAuctionRepository(
+    authenticationService: authenticationService,
+    sharedPreferences: sharedPreferences,
+    logger: logger,
+  );
+  final loginViewModel = LoginViewModel(
+    authenticationRepository: authenticationRepository,
+    authenticationService: authenticationService,
+  );
+  final searchVehicleViewModel = SearchVehicleViewModel(
+    auctionRepository: auctionRepository,
+    authenticationService: authenticationService,
+  );
+
   return GoRouter(
     initialLocation: '/search',
     routes: [
@@ -30,12 +49,7 @@ RouterConfig<Object> createRouterConfig({
           }
         },
         builder: (context, state) {
-          return LoginScreen(
-            viewModel: LoginViewModel(
-              authenticationRepository: MockAuthenticationRepository(),
-              authenticationService: authenticationService,
-            ),
-          );
+          return LoginScreen(viewModel: loginViewModel);
         },
       ),
       GoRoute(
@@ -51,15 +65,7 @@ RouterConfig<Object> createRouterConfig({
           GoRoute(
             path: '/search',
             builder: (context, state) {
-              return SearchVehicleScreen(
-                viewModel: SearchVehicleViewModel(
-                  auctionRepository: MockAuctionRepository(
-                    authenticationService: authenticationService,
-                  ),
-                  authenticationRepository: MockAuthenticationRepository(),
-                  authenticationService: authenticationService,
-                ),
-              );
+              return SearchVehicleScreen(viewModel: searchVehicleViewModel);
             },
           ),
           GoRoute(

@@ -66,7 +66,7 @@ final class _PartialDataTile extends StatelessWidget {
         ],
       ),
       onTap: () {
-        context.pop();
+        context.pop(data);
       },
     );
   }
